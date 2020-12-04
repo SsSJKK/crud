@@ -8,10 +8,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/SsSJKK/gosql/pkg/customers"
+	"github.com/SsSJKK/crud/pkg/customers"
 	"go.uber.org/dig"
 
-	"github.com/SsSJKK/gosql/cmd/app"
+	"github.com/SsSJKK/crud/cmd/app"
 	"github.com/jackc/pgx/v4/pgxpool"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )

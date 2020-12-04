@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/SsSJKK/gosql/pkg/customers"
+	"github.com/SsSJKK/crud/pkg/customers"
 )
 
 //Server ...

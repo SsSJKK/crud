@@ -1,4 +1,4 @@
-module github.com/SsSJKK/gosql
+module github.com/SsSJKK/crud
 
 go 1.15
 
