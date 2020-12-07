@@ -1,0 +1,25 @@
+###
+GET http://localhost:9999/customers/23 HTTP/1.1
+
+###
+GET http://localhost:9999/customers HTTP/1.1
+
+###
+POST  http://localhost:9999/customers HTTP/1.1
+Content-Type: application/json
+
+{
+    "id": 0,
+    "name": "Katya",
+    "Phone": "+99222332"
+}
+
+
+###
+DELETE  http://localhost:9999/customers/44 HTTP/1.1
+
+###
+POST http://localhost:9999/customers/42/block HTTP/1.1
+
+###
+DELETE  http://localhost:9999/customers/42/block HTTP/1.1

@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/gorilla/mux"
+
 	"github.com/SsSJKK/crud/pkg/customers"
 	"go.uber.org/dig"
 
@@ -29,7 +31,7 @@ func main() {
 func execute(host string, port string, dsn string) (err error) {
 	deps := []interface{}{
 		app.NewServer,
-		http.NewServeMux,
+		mux.NewRouter,
 		func() (*pgxpool.Pool, error) {
 			ctx, _ := context.WithTimeout(context.Background(), time.Second*5)
 			return pgxpool.Connect(ctx, dsn)
