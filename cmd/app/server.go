@@ -7,20 +7,24 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/SsSJKK/crud/cmd/app/middleware"
+
 	"github.com/gorilla/mux"
 
 	"github.com/SsSJKK/crud/pkg/customers"
+	"github.com/SsSJKK/crud/pkg/security"
 )
 
 //Server ...
 type Server struct {
 	mux          *mux.Router
 	customersSvc *customers.Service
+	securitySvc  *security.Service
 }
 
 //NewServer ...
-func NewServer(m *mux.Router, cSvc *customers.Service) *Server {
-	return &Server{mux: m, customersSvc: cSvc}
+func NewServer(m *mux.Router, cSvc *customers.Service, sSvc *security.Service) *Server {
+	return &Server{mux: m, customersSvc: cSvc, securitySvc: sSvc}
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -45,6 +49,8 @@ func (s *Server) Init() {
 	s.mux.HandleFunc("/customers/{id}", s.handleDelete).Methods(DELETE)
 	s.mux.HandleFunc("/customers/{id}/block", s.handleBlockByID).Methods(POST)
 	s.mux.HandleFunc("/customers/{id}/block", s.handleUnBlockByID).Methods(DELETE)
+
+	s.mux.Use(middleware.Basic(s.securitySvc.Auth))
 
 }
 

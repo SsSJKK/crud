@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/SsSJKK/crud/pkg/security"
+
 	"github.com/gorilla/mux"
 
 	"github.com/SsSJKK/crud/pkg/customers"
@@ -43,6 +45,7 @@ func execute(host string, port string, dsn string) (err error) {
 				Handler: server,
 			}
 		},
+		security.NewService,
 	}
 
 	container := dig.New()
