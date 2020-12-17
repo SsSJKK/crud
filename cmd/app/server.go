@@ -7,9 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/SsSJKK/crud/cmd/app/middleware"
-
 	"github.com/gorilla/mux"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/SsSJKK/crud/pkg/customers"
 	"github.com/SsSJKK/crud/pkg/security"
@@ -50,7 +49,11 @@ func (s *Server) Init() {
 	s.mux.HandleFunc("/customers/{id}/block", s.handleBlockByID).Methods(POST)
 	s.mux.HandleFunc("/customers/{id}/block", s.handleUnBlockByID).Methods(DELETE)
 
-	s.mux.Use(middleware.Basic(s.securitySvc.Auth))
+	s.mux.HandleFunc("/api/customers", s.apiSave).Methods("POST")
+	s.mux.HandleFunc("/api/customers/token", s.apiToken).Methods("POST")
+	s.mux.HandleFunc("/api/customers/token/validate", s.handleValidateToken).Methods("POST")
+
+	//s.mux.Use(middleware.Basic(s.securitySvc.Auth))
 
 }
 
@@ -182,6 +185,86 @@ func (s *Server) handleUnBlockByID(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, item)
 }
 
+func (s *Server) apiSave(w http.ResponseWriter, r *http.Request) {
+	var item *customers.Customer
+	err := json.NewDecoder(r.Body).Decode(&item)
+	if err != nil {
+		errorWriter(w, http.StatusBadRequest, err)
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(item.Password), bcrypt.DefaultCost)
+	if err != nil {
+		errorWriter(w, http.StatusBadRequest, err)
+		return
+	}
+
+	item.Password = string(hash)
+	customer, err := s.customersSvc.APISave(r.Context(), item)
+	if err != nil {
+		errorWriter(w, http.StatusBadRequest, err)
+		return
+	}
+	respondJSON(w, customer)
+}
+
+func (s *Server) apiToken(w http.ResponseWriter, r *http.Request) {
+	var item *struct {
+		Login    string `json:"login"`
+		Password string `json:"password"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
+		errorWriter(w, http.StatusBadRequest, err)
+		return
+	}
+
+	token, err := s.securitySvc.TokenForCustomer(r.Context(), item.Login, item.Password)
+
+	if err != nil {
+		errorWriter(w, http.StatusBadRequest, err)
+		return
+	}
+
+	respondJSON(w, map[string]interface{}{"status": "ok", "token": token})
+}
+
+func (s *Server) handleValidateToken(w http.ResponseWriter, r *http.Request) {
+	var item *struct {
+		Token string `json:"token"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
+		//вызываем фукцию для ответа с ошибкой
+		errorWriter(w, http.StatusBadRequest, err)
+		return
+	}
+
+	id, err := s.securitySvc.AuthenticateCustomer(r.Context(), item.Token)
+
+	if err != nil {
+		status := http.StatusInternalServerError
+		text := "internal error"
+		if err == security.ErrNoSuchUser {
+			status = http.StatusNotFound
+			text = "not found"
+		}
+		if err == security.ErrExpireToken {
+			status = http.StatusBadRequest
+			text = "expired"
+		}
+
+		respondJSONWithCode(w, status, map[string]interface{}{"status": "fail", "reason": text})
+		return
+	}
+
+	res := make(map[string]interface{})
+	res["status"] = "ok"
+	res["customerId"] = id
+
+	respondJSONWithCode(w, http.StatusOK, res)
+}
+
 func errorWriter(w http.ResponseWriter, httpSts int, err error) {
 	log.Print(err)
 	http.Error(w, http.StatusText(httpSts), httpSts)
@@ -194,6 +277,21 @@ func respondJSON(w http.ResponseWriter, iData interface{}) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	_, err = w.Write(data)
+	if err != nil {
+		log.Print(err)
+	}
+}
+
+
+func respondJSONWithCode(w http.ResponseWriter, sts int, iData interface{}) {
+	data, err := json.Marshal(iData)
+	if err != nil {
+		errorWriter(w, http.StatusInternalServerError, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(sts)
 	_, err = w.Write(data)
 	if err != nil {
 		log.Print(err)

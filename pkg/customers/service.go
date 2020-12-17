@@ -30,11 +30,12 @@ func NewService(pool *pgxpool.Pool) *Service {
 
 //Customer ...
 type Customer struct {
-	ID      int64     `json:"id"`
-	Name    string    `json:"name"`
-	Phone   string    `json:"phone"`
-	Active  bool      `json:"active"`
-	Created time.Time `json:"created"`
+	ID       int64     `json:"id"`
+	Name     string    `json:"name"`
+	Phone    string    `json:"phone"`
+	Password string    `json:"password"`
+	Active   bool      `json:"active"`
+	Created  time.Time `json:"created"`
 }
 
 //All ....
@@ -195,4 +196,35 @@ func (s *Service) Save(ctx context.Context, customer *Customer) (c *Customer, er
 
 }
 
+//APISave ...
+func (s *Service) APISave(ctx context.Context, customer *Customer) (c *Customer, err error) {
 
+	item := &Customer{}
+
+	if customer.ID == 0 {
+		sqlStatement := `insert into customers(name, phone, password) values($1, $2, $3) returning *`
+		err = s.pool.QueryRow(ctx, sqlStatement, customer.Name, customer.Phone, customer.Password).Scan(
+			&item.ID,
+			&item.Name,
+			&item.Phone,
+			&item.Password,
+			&item.Active,
+			&item.Created)
+	} else {
+		sqlStatement := `update customers set name=$1, phone=$2, password=$4 where id=$3 returning *`
+		err = s.pool.QueryRow(ctx, sqlStatement, customer.Name, customer.Phone, customer.ID, customer.Password).Scan(
+			&item.ID,
+			&item.Name,
+			&item.Phone,
+			&item.Password,
+			&item.Active,
+			&item.Created)
+	}
+
+	if err != nil {
+		log.Print(err)
+		return nil, ErrInternal
+	}
+	return item, nil
+
+}

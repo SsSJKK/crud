@@ -8,15 +8,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/SsSJKK/crud/pkg/security"
-
-	"github.com/gorilla/mux"
-
+	"github.com/SsSJKK/crud/cmd/app"
 	"github.com/SsSJKK/crud/pkg/customers"
+	"github.com/SsSJKK/crud/pkg/security"
+	"github.com/gorilla/mux"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"go.uber.org/dig"
 
-	"github.com/SsSJKK/crud/cmd/app"
-	"github.com/jackc/pgx/v4/pgxpool"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
