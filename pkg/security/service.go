@@ -78,8 +78,9 @@ func (s *Service) TokenForCustomer(
 		return "", ErrInternal
 	}
 	token = hex.EncodeToString(buffer)
-	sqlInsert := `INSERT INTO customers_tokens (token, customers_id) VALUES ($1, $2)`
-	_, err = s.pool.Exec(ctx, sqlInsert, token, id)
+	sqlInsert := `INSERT INTO customers_tokens (token, customer_id) VALUES ($1, $2)`
+	a, err := s.pool.Exec(ctx, sqlInsert, token, id)
+	log.Print(a)
 	return token, nil
 }
 
@@ -87,7 +88,7 @@ func (s *Service) TokenForCustomer(
 func (s *Service) AuthenticateCustomer(ctx context.Context, tkn string) (int64, error) {
 	var id int64
 	var expire time.Time
-	err := s.pool.QueryRow(ctx, `select customers_id, expire from customers_tokens where token=$1`, tkn).Scan(&id, &expire)
+	err := s.pool.QueryRow(ctx, `select customer_id, expire from customers_tokens where token=$1`, tkn).Scan(&id, &expire)
 	if err == pgx.ErrNoRows {
 		log.Println("1")
 		return 0, ErrNoSuchUser
