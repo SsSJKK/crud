@@ -202,7 +202,20 @@ func (s *Service) MakeSele(ctx context.Context, saleP *SalePositions, idManager 
 		$3,
 		$4
 	  );`
+	sqlUpdate := `UPDATE products
+	SET
+	qty = $1
+	WHERE id=$2`
 	for _, v := range saleP.Positions {
+		var qty int64
+		err = s.pool.QueryRow(ctx, `select qty from products where id = $1`, v.ProductID).Scan(&qty)
+		if err != nil {
+			return err
+		}
+		_, err = s.pool.Exec(ctx, sqlUpdate, qty-v.Qty, v.ProductID)
+		if err != nil {
+			return err
+		}
 		_, err = s.pool.Exec(ctx, sqlSalePositions, idSale, v.ProductID, v.Price, v.Qty)
 		if err != nil {
 			return err

@@ -73,12 +73,14 @@ Authorization: 877c8cfc619e577bc0e2cc62a576da8758b5ada0bab531dd4de3fce91c8d0fe5a
 
 POST  http://localhost:9999/api/managers/sales HTTP/1.1
 Content-Type: application/json
-Authorization: 877c8cfc619e577bc0e2cc62a576da8758b5ada0bab531dd4de3fce91c8d0fe5a9d5e3d6fdb76013841fcbc13e63e9584256fd845781eac2f373aed7968ce93643af1d7eb2c72e1eae4c56af4cc7b57bc94d962219c62dfe680e870c71dfde335c12ce2ed4d9c0fbcb8ef902087576d378a8dd947daa06ff377ce1f2f5329a8f0de70576aa2e74a8cad15cbc167eece6f07c678c6bae4e932b7ee3fa7155340a7513ca7fd55e38040d338bce7c73aad143602a507efe5f1e0f7d55336056b3b9096f456b9e4e2d5695a17a7dbb0130ce42ef8e3c59fe401bb533f18c58b38b43e230ba1061b161cdf2c09e3cc71deea0e3f6482dda0743e8d8588989cf6e2d8d
+Authorization: 58141675d3b005743b321eb85f9dea54b01294d6678793b684a53ccb3276786b42229065316247fbeea1e5b7d865fc6b0d83cc80cc8e909917be1c013ef5543fad18fc7eafad967a019edeeba030cd8cabd823b1c2bf4199a0ba16e46a855151422020bb22b9e7889a1c7737a7b0295b970d8b3f89b0a85851ee9341da3e71f811ed159d14bbb1cd34e7b3e35e509615605b2d107b237b5dd28ede34481a7b5e77d936a140e1327ad89a5226b8077ffaf61fbd85a02a6d48ee54bfb35fce8fa1ea4778782d0d79b7e92f19a633f28db683ef9214e8643f4981f5f5f1a60fefafc765726baba558717c7a7b263251d8a363d04a2046d563ea2a8e1591f1369cf6
 
 {
   "id": 0,
   "customer_id": null,
-   "positions": [ { "id": 0, product_id: 1, qty: 1, price: 450000 },  { "id": 0, product_id: 2, qty: 2, price: 100000 } ]
+   "positions": [ 
+       { "id": 0, "product_id": 2, "qty": 0, "price": 450000 },  
+       { "id": 0, "product_id": 2, "qty": 0, "price": 100000 } ]
 }
 
 ###

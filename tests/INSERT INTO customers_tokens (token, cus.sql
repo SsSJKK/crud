@@ -35,3 +35,8 @@ where s.manager_id = 14
 GROUP by s.manager_id;
 
 select * from managers WHERE roles[2] = 'ADMIN' and id = 14
+
+UPDATE products
+SET
+qty = 0
+WHERE id=1
