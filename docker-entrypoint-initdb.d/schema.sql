@@ -1,11 +1,3 @@
-DROP TABLE sale_positions;
-DROP TABLE sales;
-DROP TABLE products;
-DROP TABLE managers_tokens;
-DROP TABLE managers;
-DROP TABLE customers_tokens;
-DROP TABLE customers;
-
 CREATE TABLE customers (
     id BIGSERIAL PRIMARY KEY,
     name TEXT NOT NULL,
