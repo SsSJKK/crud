@@ -236,10 +236,10 @@ func (s *Service) GetSales(ctx context.Context, id int64) (int64, error) {
 	}
 	sql := `SELECT s.manager_id, sum(sp.qty * sp.price) FROM sales s
 	JOIN sale_positions as sp on sp.sale_id = s.id
-	where s.manager_id = $1
+	where s.manager_id = 1
 	GROUP by s.manager_id;`
 
-	err := s.pool.QueryRow(ctx, sql, id).Scan(&getSales.id, &getSales.sum)
+	err := s.pool.QueryRow(ctx, sql).Scan(&getSales.id, &getSales.sum)
 	if err != nil {
 		return 0, err
 	}
