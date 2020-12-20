@@ -18,7 +18,7 @@ var ErrNotFound = errors.New("item not found")
 //ErrInternal ...
 var ErrInternal = errors.New("internal error")
 
-//Service ..
+//Service ...
 type Service struct {
 	pool *pgxpool.Pool
 }
@@ -38,6 +38,14 @@ type Customer struct {
 	Created  time.Time `json:"created"`
 }
 
+//Product ...
+type Product struct {
+	ID    int64  `json:"id"`
+	Name  string `json:"name"`
+	Price int    `json:"price"`
+	Qty   int    `json:"qty"`
+}
+
 //All ....
 func (s *Service) All(ctx context.Context) (cs []*Customer, err error) {
 
@@ -55,6 +63,7 @@ func (s *Service) All(ctx context.Context) (cs []*Customer, err error) {
 			&item.ID,
 			&item.Name,
 			&item.Phone,
+			&item.Password,
 			&item.Active,
 			&item.Created,
 		)
@@ -84,6 +93,7 @@ func (s *Service) AllActive(ctx context.Context) (cs []*Customer, err error) {
 			&item.ID,
 			&item.Name,
 			&item.Phone,
+			&item.Password,
 			&item.Active,
 			&item.Created,
 		)
@@ -105,6 +115,7 @@ func (s *Service) ByID(ctx context.Context, id int64) (*Customer, error) {
 		&item.ID,
 		&item.Name,
 		&item.Phone,
+		&item.Password,
 		&item.Active,
 		&item.Created)
 
@@ -128,6 +139,7 @@ func (s *Service) ChangeActive(ctx context.Context, id int64, active bool) (*Cus
 		&item.ID,
 		&item.Name,
 		&item.Phone,
+		&item.Password,
 		&item.Active,
 		&item.Created)
 
@@ -151,6 +163,7 @@ func (s *Service) Delete(ctx context.Context, id int64) (*Customer, error) {
 		&item.ID,
 		&item.Name,
 		&item.Phone,
+		&item.Password,
 		&item.Active,
 		&item.Created)
 
@@ -176,6 +189,7 @@ func (s *Service) Save(ctx context.Context, customer *Customer) (c *Customer, er
 			&item.ID,
 			&item.Name,
 			&item.Phone,
+			&item.Password,
 			&item.Active,
 			&item.Created)
 	} else {
@@ -184,6 +198,7 @@ func (s *Service) Save(ctx context.Context, customer *Customer) (c *Customer, er
 			&item.ID,
 			&item.Name,
 			&item.Phone,
+			&item.Password,
 			&item.Active,
 			&item.Created)
 	}
@@ -228,3 +243,54 @@ func (s *Service) APISave(ctx context.Context, customer *Customer) (c *Customer,
 	return item, nil
 
 }
+
+//Products ...
+func (s *Service) Products(ctx context.Context) ([]*Product, error) {
+	items := make([]*Product, 0)
+	rows, err := s.pool.Query(ctx,
+		`select id, name, price, qty from products where active order by id limit 500`)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return items, nil
+	}
+	if err != nil {
+		return nil, ErrInternal
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		item := &Product{}
+		err = rows.Scan(&item.ID, &item.Name, &item.Price, &item.Qty)
+		if err != nil {
+			log.Println(err)
+			return nil, err
+		}
+		items = append(items, item)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	return items, nil
+}
+
+//IDByToken ...
+func (s *Service) IDByToken(ctx context.Context, token string) (int64, error) {
+	var id int64
+	err := s.pool.QueryRow(ctx,
+		`select id from managers where token = $1`, token).Scan(&id)
+
+	if err == pgx.ErrNoRows {
+		return 0, nil
+	}
+
+	if err != nil {
+		return 0, ErrInternal
+	}
+
+	return id, nil
+}
+

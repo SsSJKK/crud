@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/SsSJKK/crud/pkg/managers"
+
 	"github.com/SsSJKK/crud/cmd/app"
 	"github.com/SsSJKK/crud/pkg/customers"
 	"github.com/SsSJKK/crud/pkg/security"
@@ -37,13 +39,16 @@ func execute(host string, port string, dsn string) (err error) {
 			return pgxpool.Connect(ctx, dsn)
 		},
 		customers.NewService,
+		managers.NewService,
 		func(server *app.Server) *http.Server {
 			return &http.Server{
 				Addr:    net.JoinHostPort(host, port),
 				Handler: server,
 			}
 		},
+		
 		security.NewService,
+		
 	}
 
 	container := dig.New()
