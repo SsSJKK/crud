@@ -76,12 +76,9 @@ Content-Type: application/json
 Authorization: 877c8cfc619e577bc0e2cc62a576da8758b5ada0bab531dd4de3fce91c8d0fe5a9d5e3d6fdb76013841fcbc13e63e9584256fd845781eac2f373aed7968ce93643af1d7eb2c72e1eae4c56af4cc7b57bc94d962219c62dfe680e870c71dfde335c12ce2ed4d9c0fbcb8ef902087576d378a8dd947daa06ff377ce1f2f5329a8f0de70576aa2e74a8cad15cbc167eece6f07c678c6bae4e932b7ee3fa7155340a7513ca7fd55e38040d338bce7c73aad143602a507efe5f1e0f7d55336056b3b9096f456b9e4e2d5695a17a7dbb0130ce42ef8e3c59fe401bb533f18c58b38b43e230ba1061b161cdf2c09e3cc71deea0e3f6482dda0743e8d8588989cf6e2d8d
 
 {
-    "id":0,
-    "customer_id": null,
-    "positions": [
-        {"id":0, "product_id":1, "qty":2,"price":500}, 
-        {"id":0, "product_id":1, "qty":1,"price":1000}
-        ]
+  "id": 0,
+  "customer_id": null,
+   "positions": [ { "id": 0, product_id: 1, qty: 1, price: 450000 },  { "id": 0, product_id: 2, qty: 2, price: 100000 } ]
 }
 
 ###

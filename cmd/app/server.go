@@ -40,10 +40,10 @@ const (
 
 //Init ...
 func (s *Server) Init() {
-	customersAythMd := middleware.Authenticate(s.customersSvc.IDByToken)
+	//customersAythMd := middleware.Authenticate(s.customersSvc.IDByToken)
 
 	customersSubRouter := s.mux.PathPrefix("/api/customers").Subrouter()
-	customersSubRouter.Use(customersAythMd)
+	//customersSubRouter.Use(customersAythMd)
 
 	customersSubRouter.HandleFunc("/active", s.handleGetAllActiveCustomers).Methods(GET)
 	customersSubRouter.HandleFunc("", s.handleGetAllCustomers).Methods(GET)
@@ -64,7 +64,6 @@ func (s *Server) Init() {
 
 	managersSubrouter := s.mux.PathPrefix("/api/managers").Subrouter()
 	managersSubrouter.Use(managersAythMd)
-
 	managersSubrouter.HandleFunc("", s.hManagerR).Methods(POST)
 	managersSubrouter.HandleFunc("/token", s.apiTokenManager).Methods(POST)
 	managersSubrouter.HandleFunc("/token/validate", s.pass).Methods(POST)
