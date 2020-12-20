@@ -239,10 +239,8 @@ func (s *Service) GetSales(ctx context.Context, id int64) (int64, error) {
 	where s.manager_id = 1
 	GROUP by s.manager_id;`
 
-	err := s.pool.QueryRow(ctx, sql).Scan(&getSales.id, &getSales.sum)
-	if err != nil {
-		return 0, err
-	}
+	s.pool.QueryRow(ctx, sql).Scan(&getSales.id, &getSales.sum)
+
 	return getSales.sum, nil
 
 }
